@@ -8,6 +8,8 @@ class ContactsService extends ChangeNotifier {
   List<Contact> _cachedContacts = [];
   List<Contact> get cachedContacts => _cachedContacts;
 
+  Contact? _currentContact;
+  Contact? get currentContact => _currentContact;
 
   Future<void> getContacts() async {
     await requestContactsPermission();
@@ -20,9 +22,14 @@ class ContactsService extends ChangeNotifier {
   }
   // Future methods are used to fetch data asynchronously because the data is fetched from the device's storage and it may take some time to fetch the data.
 
+  Future<void> getContactById(String id) async {
+    _currentContact = _cachedContacts.firstWhere((contact) => contact.id == id);
+    notifyListeners();
+  }
 
   Future<void> refreshContacts() async {
     _cachedContacts = await FlutterContacts.getContacts(withPhoto: true);
+    getContactById(_currentContact!.id);
     notifyListeners();
   }
 
